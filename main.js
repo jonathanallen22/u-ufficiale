@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       baseColor: new THREE.Color(0xA73FEB),
       duplicateColor: new THREE.Color(0xEB413B),
       scale: 10                            // scala personalizzata
-    }
+    },
   ];
 
   // === CONFIGURAZIONE UNICA PER TUTTI I MODELLI TNT ===
@@ -86,6 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
     'https://provaxbottone.netlify.app/mod/tnt_7.glb',
     'https://provaxbottone.netlify.app/mod/tnt_8.glb',
     'https://provaxbottone.netlify.app/mod/tnt_1.glb'
+   
+
+
   ];
 
   const tntConfig = {

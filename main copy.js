@@ -4,72 +4,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import * as dat from 'dat.gui';
 
 // === SCENA BASE ===
 document.addEventListener("DOMContentLoaded", () => {
-  // Minimal dat.GUI bianco
-  const style = document.createElement('style');
-  style.innerHTML = `
-  .dg {
-    position: fixed !important;
-    top: 40px !important;      /* distanza dal bordo superiore */
-    right: 20px !important;    /* distanza dal bordo destro */
-    left: auto !important;
-    z-index: 9999 !important;
-  }
-  .dg, .dg .main {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-  .dg .cr {
-    background: transparent !important;
-    border: none !important;
-    margin-bottom: 8px !important;
-  }
-  .dg .property-name {
-    color: #fff !important;
-    font-weight: 400 !important;
-    font-family: inherit !important;
-    letter-spacing: 0.5px;
-  }
-  .dg .slider {
-    background: transparent !important;
-    height: 18px !important;
-    margin: 0 0 0 10px !important;
-  }
-    .dg .slider-fg {
-    background: #fff !important;
-    height: 3px !important;
-    top: 8px !important;
-    border-radius: 1px !important;
-    min-width: 0 !important;
-  }
-  .dg input[type="text"], .dg select {
-    background: transparent !important;
-    color: #fff !important;
-    border: none !important;
-    font-weight: 400 !important;
-  }
-  .dg .c input[type="checkbox"] {
-    accent-color: #fff !important;
-  }
-  .dg .close-button {
-    color: #fff !important;
-  }
-  .dg select {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  background: transparent !important;
-  border: none !important;
-  color: #fff !important;
-}
-  `;
-  document.head.appendChild(style);
-  
-
   const container = document.getElementById("medusa-root");
   const rootElement = container;
   const scene = new THREE.Scene();
@@ -113,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const DUPLICATE_RATIO = 0.4;
 
-  /*// === CONFIGURAZIONE MODELLI ===
+  // === CONFIGURAZIONE MODELLI ===
   const modelConfigs = [
     {
       url: 'https://provaxbottone.netlify.app/mod/testa.glb',
@@ -159,59 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
     baseColor: new THREE.Color(0x4682EB),
     duplicateColor: new THREE.Color(0xAD46EB),
     scale:10
-  };
-  //________—_____————__——_—————————————————————————————__///
-
-  const pointClouds = []; */
-
-  // === CONFIGURAZIONE MODELLI ===
-  const modelConfigs = [
-
-    {
-      url: 'https://medusa-definitiva.netlify.app/mod/calotta_ext.glb',
-      points: 50000,
-      baseColor: new THREE.Color(0x13A6EB),
-      duplicateColor: new THREE.Color(0xEB137C),
-      scale: 5                           // scala personalizzata
-    },
-    {
-      url: 'https://medusa-definitiva.netlify.app/mod/calotta_int.glb',
-      points: 19000,
-      baseColor: new THREE.Color(0xA73FEB),
-      duplicateColor: new THREE.Color(0xEB413B),
-      scale: 5                            // scala personalizzata
-    },
-  ];
-
-  // === CONFIGURAZIONE UNICA PER TUTTI I MODELLI TNT ===
-  const tntModels = [
-    'https://medusa-definitiva.netlify.app/mod/tnt_gr/gr_1.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_gr/gr_2.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_gr/gr_3.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_gr/gr_4.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_md/md_1.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_md/md_2.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_md/md_3.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_md/md_4.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_1.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_2.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_3.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_4.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_1.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_2.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_3.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_4.glb',
-    
-   
-
-
-  ];
-
-  const tntConfig = {
-    points: 3000,
-    baseColor: new THREE.Color(0x4682EB),
-    duplicateColor: new THREE.Color(0xAD46EB),
-    scale:5
   };
   //________—_____————__——_—————————————————————————————__///
 
@@ -685,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const array = positionAttribute.array;
 
     for (let i = 0; i < array.length; i += 3) {
-      const jellyWiggle = 0.2 * Math.sin(time * 0.5 + i * 0.1);
+      const jellyWiggle = 0.2 * Math.sin(time * 2 + i * 0.1);
       array[i] += 0.002*jellyWiggle;     // x
       array[i + 1] += 0.0015*jellyWiggle; // y
       array[i + 2] += 0.0001 * Math.cos(time + i * 0.2); // z
@@ -695,8 +579,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let lastUpdate = 0;
-
-
   function animate() {
     requestAnimationFrame(animate);
 
@@ -723,45 +605,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let convolver; // Nodo per il riverbero
   let patternInterval; // Per gestire il loop del pattern
 
-  // Parametri audio controllabili da GUI
-  const soundParams = {
-    attack: 0.2,
-    decay: 0.2,
-    sustain: 0.15,
-    release: 1.0,
-    volume: 0.2,
-    wave: 'sine',
-    baseNote: 200 // aggiungi qui!
-  };
-
   // Scala araba in La minore
   const arabicScale = [0, 1, 4, 5, 7, 8, 11]; // Intervalli in semitoni
   const baseNote = 200; // Nota base 
-  let scaleNotes = arabicScale.map(semitone => soundParams.baseNote * Math.pow(2, semitone / 12));
-
-
-  // Crea la GUI
-  const gui = new dat.GUI();
-  gui.add(soundParams, 'attack', 0, 2, 0.01);
-  gui.add(soundParams, 'decay', 0, 2, 0.01);
-  gui.add(soundParams, 'sustain', 0, 1, 0.01);
-  gui.add(soundParams, 'release', 0, 3, 0.01);
-  gui.add(soundParams, 'wave', ['sine', 'triangle', 'square', 'sawtooth']).onChange(() => {
-    if (oscillator) {
-      oscillator.type = soundParams.wave;
-    }
-  });
-  gui.add(soundParams, 'baseNote', 50, 800, 1).name('Nota base (Hz)').onChange(() => {
-    scaleNotes = arabicScale.map(semitone => soundParams.baseNote * Math.pow(2, semitone / 12));
-  });
-
-  
-
-  
-
-
-
-
+  const scaleNotes = arabicScale.map(semitone => baseNote * Math.pow(2, semitone / 12));
 
   // Funzione per generare un impulso di riverbero (aumentato)
   function generateReverbImpulse(audioContext, duration = 3.0, decay = 2.0) {
@@ -779,20 +626,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return impulse;
   }
-    // Funzione per applicare un envelope ADSR
-    function applyADSR(
-    gainNode,
-    attack = soundParams.attack,
-    decay = soundParams.decay,
-    sustain = soundParams.sustain,
-    release = soundParams.release
-  ) {
+  // Funzione per applicare un envelope ADSR
+  function applyADSR(gainNode, attack = 1.0, decay = 0.5, sustain = 0.2, release = 4.0) {
     const now = audioContext.currentTime;
     gainNode.gain.cancelScheduledValues(now);
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + attack);
-    gainNode.gain.linearRampToValueAtTime(sustain, now + attack + decay);
-    gainNode.gain.setTargetAtTime(0, now + attack + decay + sustain, release);
+    gainNode.gain.setValueAtTime(0, now); // Inizio a 0
+    gainNode.gain.linearRampToValueAtTime(0.5, now + attack); // Attacco con volume massimo ridotto
+    gainNode.gain.linearRampToValueAtTime(sustain, now + attack + decay); // Decadimento
+    gainNode.gain.setTargetAtTime(0, now + attack + decay + sustain, release); // Rilascio lungo
   }
 
 
@@ -815,13 +656,7 @@ document.addEventListener("DOMContentLoaded", () => {
       oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
       // Applica un breve envelope ADSR per ogni nota
-      applyADSR(
-        gainNode,
-        soundParams.attack,
-        soundParams.decay,
-        soundParams.sustain,
-        soundParams.release
-      );
+      applyADSR(gainNode, 0.05, 0.1, 0.2, 0.3);
 
       noteIndex++;
     }, interval);
@@ -833,13 +668,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Applica un rilascio morbido al suono
       if (gainNode) {
-          applyADSR(
-        gainNode,
-        soundParams.attack,
-        soundParams.decay,
-        soundParams.sustain,
-        soundParams.release
-      ); // Solo rilascio lungo
+        applyADSR(gainNode, 0, 0, 0.2, 1.0); // Solo rilascio lungo
       }
     }, duration);
   }
@@ -847,18 +676,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function playNoteWithTimeout(frequency) {
     if (!audioContext || !gainNode || !oscillator) return;
 
-    oscillator.type = soundParams.wave;
     // Cambia la frequenza dell'oscillatore
     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
     // Applica un envelope ADSR
-    applyADSR(
-      gainNode,
-      soundParams.attack,
-      soundParams.decay,
-      soundParams.sustain,
-      soundParams.release
-    );// Envelope breve
+    applyADSR(gainNode, 0.1, 0.2, 0.3, 0.5); // Envelope breve
 
     // Imposta un timeout per fermare il suono dopo 3 secondi
     setTimeout(() => {
@@ -891,7 +713,7 @@ document.addEventListener("DOMContentLoaded", () => {
       convolver.connect(audioContext.destination);
 
       oscillator = audioContext.createOscillator();
-      oscillator.type = soundParams.wave;
+      oscillator.type = 'sine';
       oscillator.frequency.setValueAtTime(110, audioContext.currentTime); // Nota base (A3)
       oscillator.connect(gainNode);
       oscillator.start();
@@ -907,13 +729,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audioContext) {
       // Inizializza AudioContext e nodi audio se non già inizializzati
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      gainNode = gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + attack);
+      gainNode = audioContext.createGain();
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
 
       oscillator = audioContext.createOscillator();
-      oscillator.type = soundParams.wave; // Puoi cambiare il tipo di onda (sine, square, sawtooth, triangle)
+      oscillator.type = 'sine'; // Puoi cambiare il tipo di onda (sine, square, sawtooth, triangle)
       oscillator.connect(gainNode);
-      gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + attack);
+      gainNode.connect(audioContext.destination);
       oscillator.start();
     }
 
@@ -950,13 +772,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // Applica un rilascio morbido al suono
     if (gainNode) {
-      applyADSR(
-        gainNode,
-        soundParams.attack,
-        soundParams.decay,
-        soundParams.sustain,
-        soundParams.release
-); // Solo rilascio lungo
+      applyADSR(gainNode, 0, 0, 0.2, 1.0); // Solo rilascio lungo
     }
   });
   // SUONO SUONO SUONO SUONO SUONO SUONO SUONO SUONO// SUONO SUONO SUONO SUONO SUONO SUONO SUONO SUONO// SUONO SUONO SUONO SUONO SUONO SUONO SUONO SUONO
@@ -978,97 +794,97 @@ document.addEventListener("DOMContentLoaded", () => {
   const pointCloudZones = [];  // Points visibili
 
   function createPointCloudZones(pointClouds, zoneConfigs) {
-  // Pulisci la scena se già presenti
-  clickZones.forEach(mesh => scene.remove(mesh));
-  pointCloudZones.forEach(p => scene.remove(p));
-  clickZones.length = 0;
-  pointCloudZones.length = 0;
+    // Pulisce la scena se già presenti
+    clickZones.forEach(mesh => scene.remove(mesh));
+    pointCloudZones.forEach(p => scene.remove(p));
+    clickZones.length = 0;
+    pointCloudZones.length = 0;
 
-  // Definisci i centri delle 5 macro-nuvole (puoi regolare le posizioni)
-  const macroCenters = [
-    new THREE.Vector3(-2, 0, 0),
-    new THREE.Vector3(-1, 1.5, 0),
-    new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(1, 1.5, 0),
-    new THREE.Vector3(2, 0, 0)
-  ];
+    const positions = [];
+    const colors = [];
+    const zoneData = [];
 
-  let destinationCounter = 1;
+    let destinationCounter = 1; // Contatore per URL incrementale
 
-  zoneConfigs.forEach((cfg, macroIdx) => {
-    const macroCenter = macroCenters[macroIdx % macroCenters.length];
-    for (let i = 0; i < cfg.count; i++) {
-      // Genera un centro zona attorno al centro della macro-nuvola
-      const angle = Math.random() * Math.PI * 2;
-      const radius = 0.4 + Math.random() * 0.3; // distanza dal centro macro
-      const center = macroCenter.clone().add(
-        new THREE.Vector3(
-          Math.cos(angle) * radius,
-          Math.sin(angle) * radius,
-          (Math.random() - 0.5) * 0.3
-        )
-      );
+    zoneConfigs.forEach(cfg => {
+      for (let i = 0; i < cfg.count; i++) {
+        const pc = pointClouds[i % pointClouds.length];
+        const posAttr = pc.geometry.attributes.position;
+        const idx = Math.floor(Math.random() * posAttr.count);
+        const center = new THREE.Vector3().fromBufferAttribute(posAttr, idx);
+        const radius = cfg.size;
 
-      // Genera i punti della zona attorno al centro
-      const positions = [];
-      const colors = [];
-      for (let p = 0; p < 100; p++) {
-        let point;
-        do {
-          point = new THREE.Vector3(
-            (Math.random() * 2 - 1),
-            (Math.random() * 2 - 1),
-            (Math.random() * 2 - 1)
-          );
-        } while (point.length() > 1);
+        for (let p = 0; p < 100; p++) { // Riduci il numero di punti
+          let point;
+          do {
+            point = new THREE.Vector3(
+              (Math.random() * 2 - 1),
+              (Math.random() * 2 - 1),
+              (Math.random() * 2 - 1)
+            );
+          } while (point.length() > 1);
 
-        point.multiplyScalar(cfg.size).add(center);
-        positions.push(point.x, point.y, point.z);
+          point.multiplyScalar(radius).add(center);
+          positions.push(point.x, point.y, point.z);
 
-        const color = new THREE.Color(cfg.color);
-        colors.push(color.r, color.g, color.b);
+          const color = new THREE.Color(cfg.color);
+          colors.push(color.r, color.g, color.b);
+        }
+
+        // Mesh invisibile per il raycast (super semplice)
+        const sphere = new THREE.Mesh(
+          new THREE.SphereGeometry(radius, 2, 2), // Riduci i segmenti
+          new THREE.MeshBasicMaterial({ visible: false })
+        );
+        sphere.position.copy(center);
+        sphere.userData = {
+          id: `${cfg.id}_${i + 1}`,
+          type: cfg.type,
+          color: cfg.color,
+          center: center.clone(),
+          radius,
+          destination: `https://jonathans-stunning-site-778d47.webflow.io/zona-${destinationCounter}`, // URL unico
+          zoneType: 'zona'
+        };
+        destinationCounter++; // Incrementa per la prossima zona
+        scene.add(sphere);
+        scene.add(sphere);
+        clickZones.push(sphere);
       }
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    
+    // Disegna un cerchio
+    ctx.beginPath();
+    ctx.arc(32, 32, 30, 0, Math.PI * 2);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.closePath();
+    
+    const circleTexture = new THREE.CanvasTexture(canvas);
+    // Unico point cloud
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-      // Mesh invisibile per il raycast
-      const sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(cfg.size, 2, 2),
-        new THREE.MeshBasicMaterial({ visible: false })
-      );
-      sphere.position.copy(center);
-      sphere.userData = {
-        id: `${cfg.id}_${i + 1}`,
-        type: cfg.type,
-        color: cfg.color,
-        center: center.clone(),
-        radius: cfg.size,
-        destination: `https://jonathans-stunning-site-778d47.webflow.io/zona-${destinationCounter}`,
-        zoneType: 'zona'
-      };
-      destinationCounter++;
-      scene.add(sphere);
-      clickZones.push(sphere);
-
-      // Point cloud visibile
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-      geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-      const mat = new THREE.PointsMaterial({
-        size: 0.05,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.7,
-        depthWrite: false,
-        sizeAttenuation: true,
-        blending: THREE.AdditiveBlending
-      });
-
-      const pointCloud = new THREE.Points(geo, mat);
-      scene.add(pointCloud);
-      pointCloudZones.push(pointCloud);
-    }
+    const mat = new THREE.PointsMaterial({
+      size: 0.05,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.7,
+      depthWrite: false,
+      sizeAttenuation: true, // Attenua la dimensione in base alla distanza
+    map: circleTexture, // Usa una texture circolare
+    blending: THREE.AdditiveBlending // 💥 Glow effect
   });
-}
+
+    const pointCloud = new THREE.Points(geo, mat);
+    scene.add(pointCloud);
+    pointCloudZones.push(pointCloud);
+  }
 
   let originalCamPos = camera.position.clone();
   let originalTarget = controls.target.clone();

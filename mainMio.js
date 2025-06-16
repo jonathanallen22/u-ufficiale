@@ -4,9 +4,72 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as dat from 'dat.gui';
 
 // === SCENA BASE ===
 document.addEventListener("DOMContentLoaded", () => {
+  // Minimal dat.GUI bianco
+  const style = document.createElement('style');
+  style.innerHTML = `
+  .dg {
+    position: fixed !important;
+    top: 40px !important;      /* distanza dal bordo superiore */
+    right: 20px !important;    /* distanza dal bordo destro */
+    left: auto !important;
+    z-index: 9999 !important;
+  }
+  .dg, .dg .main {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .dg .cr {
+    background: transparent !important;
+    border: none !important;
+    margin-bottom: 8px !important;
+  }
+  .dg .property-name {
+    color: #fff !important;
+    font-weight: 400 !important;
+    font-family: inherit !important;
+    letter-spacing: 0.5px;
+  }
+  .dg .slider {
+    background: transparent !important;
+    height: 18px !important;
+    margin: 0 0 0 10px !important;
+  }
+    .dg .slider-fg {
+    background: #fff !important;
+    height: 3px !important;
+    top: 8px !important;
+    border-radius: 1px !important;
+    min-width: 0 !important;
+  }
+  .dg input[type="text"], .dg select {
+    background: transparent !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 400 !important;
+  }
+  .dg .c input[type="checkbox"] {
+    accent-color: #fff !important;
+  }
+  .dg .close-button {
+    color: #fff !important;
+  }
+  .dg select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+}
+  `;
+  document.head.appendChild(style);
+  
+
   const container = document.getElementById("medusa-root");
   const rootElement = container;
   const scene = new THREE.Scene();
@@ -50,15 +113,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const DUPLICATE_RATIO = 0.4;
 
-  // === CONFIGURAZIONE MODELLI ===
+  /*// === CONFIGURAZIONE MODELLI ===
   const modelConfigs = [
     {
-      url: 'Medusa_def/rosa.glb',
+      url: 'https://provaxbottone.netlify.app/mod/testa.glb',
       points: 10000,
       baseColor: new THREE.Color(0x13A6EB),
       duplicateColor: new THREE.Color(0xEB137C),
-      scale: 5                           // scala personalizzata
+      scale: 10                           // scala personalizzata
     },
+    {
+      url: 'https://provaxbottone.netlify.app/mod/CALOTTA.glb',
+      points: 50000,
+      baseColor: new THREE.Color(0x13A6EB),
+      duplicateColor: new THREE.Color(0xEB137C),
+      scale: 10                           // scala personalizzata
+    },
+    {
+      url: 'https://provaxbottone.netlify.app/mod/testa2.glb',
+      points: 18000,
+      baseColor: new THREE.Color(0xA73FEB),
+      duplicateColor: new THREE.Color(0xEB413B),
+      scale: 10                            // scala personalizzata
+    },
+  ];
+
+  // === CONFIGURAZIONE UNICA PER TUTTI I MODELLI TNT ===
+  const tntModels = [
+    'https://provaxbottone.netlify.app/mod/tnt_0.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_2.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_3.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_4.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_5.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_6.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_7.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_8.glb',
+    'https://provaxbottone.netlify.app/mod/tnt_1.glb'
+   
+
+
+  ];
+
+  const tntConfig = {
+    points: 10000,
+    baseColor: new THREE.Color(0x4682EB),
+    duplicateColor: new THREE.Color(0xAD46EB),
+    scale:10
+  };
+  //________—_____————__——_—————————————————————————————__///
+
+  const pointClouds = []; */
+
+  // === CONFIGURAZIONE MODELLI ===
+  const modelConfigs = [
+
     {
       url: 'https://medusa-definitiva.netlify.app/mod/calotta_ext.glb',
       points: 50000,
@@ -86,14 +194,17 @@ document.addEventListener("DOMContentLoaded", () => {
     'https://medusa-definitiva.netlify.app/mod/tnt_md/md_3.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_md/md_4.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_1.glb',
-    'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_3.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_2.glb',
+    'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_3.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_ond/ond_4.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_1.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_2.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_3.glb',
     'https://medusa-definitiva.netlify.app/mod/tnt_pcc/pcc_4.glb',
     
+   
+
+
   ];
 
   const tntConfig = {
@@ -105,8 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
   //________—_____————__——_—————————————————————————————__///
 
   const pointClouds = [];
-  let pointCloud; // <--- aggiungi questa riga fuori da qualsiasi funzione
-  let pointTypes = []; // <--- aggiungi questa riga fuori da qualsiasi funzione
 
   // === LOADER ===
   const loader = new GLTFLoader();
@@ -286,6 +395,122 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   //vale per i modelli/7/
 
+  /*function createFloatingCloud({
+    count = 8000,
+    areaSize = 30,
+    minSize = 0.08,
+    maxSize = 0.15,
+    palette = mainColorPalette
+  } = {}) {
+    const positions = [];
+    const colors = [];
+    const sizes = new Float32Array(count);
+    const amp = new Float32Array(count);
+    const freq = new Float32Array(count);
+    const phase = new Float32Array(count);
+    const basePositions = [];
+
+    for (let i = 0; i < count; i++) {
+      const x = (Math.random() - 0.5) * areaSize;
+      const y = (Math.random() - 0.5) * areaSize;
+      const z = (Math.random() - 0.5) * areaSize;
+      positions.push(x, y, z);
+      basePositions.push(new THREE.Vector3(x, y, z));
+
+      const col = palette[Math.floor(Math.random() * palette.length)];
+      colors.push(col.r, col.g, col.b);
+
+      sizes[i] = minSize + Math.random() * (maxSize - minSize);
+      amp[i] = 0.2 + Math.random() * 0.4; // Ampiezza del movimento
+      freq[i] = 0.5 + Math.random() * 1.5; // Frequenza del movimento
+      phase[i] = Math.random() * Math.PI * 2; // Fase iniziale
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+    // ✅ Texture circolare dinamica via canvas
+    const discTexture = new THREE.CanvasTexture(generateCircleTexture());
+    discTexture.minFilter = THREE.LinearFilter;
+    discTexture.magFilter = THREE.LinearFilter;
+    discTexture.generateMipmaps = false;
+
+    const material = new THREE.PointsMaterial({
+      size: 0.15,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.6,
+      map: discTexture,
+      alphaTest: 0.01,
+      depthWrite: false
+    });
+
+    const cloud = new THREE.Points(geometry, material);
+    scene.add(cloud);
+
+    pointClouds.push({
+      geometry,
+      material,
+      basePositions,
+      amp,
+      freq,
+      phase,
+      userData: { isFloatingCloud: true }
+    });
+
+    // Aggiungi animazione per il movimento dei punti
+    function animateFloatingCloud() {
+      const positions = geometry.attributes.position.array;
+
+      for (let i = 0; i < count; i++) {
+        const basePos = basePositions[i];
+        const time = performance.now() * 0.0002; // Riduci la velocità del tempo
+
+        // Movimento sinusoidale indipendente per ogni punto
+        positions[i * 3] = basePos.x + Math.sin(time * freq[i] + phase[i]) * amp[i] * 2; // Oscillazione lenta lungo X
+        positions[i * 3 + 1] = basePos.y + Math.cos(time * freq[i] + phase[i]) * amp[i] * 2; // Oscillazione lenta lungo Y
+        positions[i * 3 + 2] = basePos.z + Math.sin(time * freq[i] + phase[i]) * amp[i]; // Oscillazione lenta lungo Z
+      }
+
+      geometry.attributes.position.needsUpdate = true; // Segnala che la posizione è stata aggiornata
+      requestAnimationFrame(animateFloatingCloud); // Continua l'animazione
+    }
+
+    animateFloatingCloud(); // Avvia l'animazione
+  }
+
+  createFloatingCloud({
+    count: 2000,
+    areaSize: 30,
+    minSize: 0.08,
+    maxSize: 0.15,
+    palette: mainColorPalette
+  });
+
+  function generateCircleTexture(size = 64) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.closePath();
+
+    const gradient = ctx.createRadialGradient(
+      size / 2, size / 2, 0,
+      size / 2, size / 2, size / 2
+    );
+    gradient.addColorStop(0.0, 'rgba(255,255,255,1)');
+    gradient.addColorStop(1.0, 'rgba(75, 59, 196, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    return canvas;
+  }*/
+
   ////////MAGNETE//////////
   function deformModelWithMouse({
     attractionStrength = 0.009,
@@ -363,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modules = []; // Array per contenere le mesh dei moduli principali
 
   // Carica i moduli e aggiungi solo le mesh
-  loader.load('https://medusa-definitiva.netlify.app/mod/calotta_ext.glb', (gltf) => {
+  loader.load('mod/CALOTTA.glb', (gltf) => {
     gltf.scene.traverse((child) => {
       if (child.isMesh) {
         modules.push(child); // Aggiungi solo le mesh
@@ -373,7 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
     scene.add(gltf.scene);
   });
 
-  loader.load('https://medusa-definitiva.netlify.app/mod/calotta_int.glb', (gltf) => {
+  loader.load('mod/testa.glb', (gltf) => {
     gltf.scene.traverse((child) => {
       if (child.isMesh) {
         modules.push(child); // Aggiungi solo le mesh
@@ -460,7 +685,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const array = positionAttribute.array;
 
     for (let i = 0; i < array.length; i += 3) {
-      const jellyWiggle = 0.2 * Math.sin(time * 2 + i * 0.1);
+      const jellyWiggle = 0.2 * Math.sin(time * 0.5 + i * 0.1);
       array[i] += 0.002*jellyWiggle;     // x
       array[i + 1] += 0.0015*jellyWiggle; // y
       array[i + 2] += 0.0001 * Math.cos(time + i * 0.2); // z
@@ -470,6 +695,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let lastUpdate = 0;
+
+
   function animate() {
     requestAnimationFrame(animate);
 
@@ -481,6 +708,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       lastUpdate = time;
     }
+
+
 
     controls.update();
     renderer.render(scene, camera);
@@ -496,10 +725,45 @@ document.addEventListener("DOMContentLoaded", () => {
   let convolver; // Nodo per il riverbero
   let patternInterval; // Per gestire il loop del pattern
 
+  // Parametri audio controllabili da GUI
+  const soundParams = {
+    attack: 0.2,
+    decay: 0.2,
+    sustain: 0.15,
+    release: 1.0,
+    volume: 0.2,
+    wave: 'sine',
+    baseNote: 200 // aggiungi qui!
+  };
+
   // Scala araba in La minore
   const arabicScale = [0, 1, 4, 5, 7, 8, 11]; // Intervalli in semitoni
-  const baseNote = 220; // Nota base (La3)
-  const scaleNotes = arabicScale.map(semitone => baseNote * Math.pow(2, semitone / 12));
+  const baseNote = 200; // Nota base 
+  let scaleNotes = arabicScale.map(semitone => soundParams.baseNote * Math.pow(2, semitone / 12));
+
+
+  // Crea la GUI
+  const gui = new dat.GUI();
+  gui.add(soundParams, 'attack', 0, 2, 0.01);
+  gui.add(soundParams, 'decay', 0, 2, 0.01);
+  gui.add(soundParams, 'sustain', 0, 1, 0.01);
+  gui.add(soundParams, 'release', 0, 3, 0.01);
+  gui.add(soundParams, 'wave', ['sine', 'triangle', 'square', 'sawtooth']).onChange(() => {
+    if (oscillator) {
+      oscillator.type = soundParams.wave;
+    }
+  });
+  gui.add(soundParams, 'baseNote', 50, 800, 1).name('Nota base (Hz)').onChange(() => {
+    scaleNotes = arabicScale.map(semitone => soundParams.baseNote * Math.pow(2, semitone / 12));
+  });
+
+  
+
+  
+
+
+
+
 
   // Funzione per generare un impulso di riverbero (aumentato)
   function generateReverbImpulse(audioContext, duration = 3.0, decay = 2.0) {
@@ -517,14 +781,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return impulse;
   }
-  // Funzione per applicare un envelope ADSR
-  function applyADSR(gainNode, attack = 1.0, decay = 0.5, sustain = 0.2, release = 4.0) {
+    // Funzione per applicare un envelope ADSR
+    function applyADSR(
+    gainNode,
+    attack = soundParams.attack,
+    decay = soundParams.decay,
+    sustain = soundParams.sustain,
+    release = soundParams.release
+  ) {
     const now = audioContext.currentTime;
     gainNode.gain.cancelScheduledValues(now);
-    gainNode.gain.setValueAtTime(0, now); // Inizio a 0
-    gainNode.gain.linearRampToValueAtTime(0.5, now + attack); // Attacco con volume massimo ridotto
-    gainNode.gain.linearRampToValueAtTime(sustain, now + attack + decay); // Decadimento
-    gainNode.gain.setTargetAtTime(0, now + attack + decay + sustain, release); // Rilascio lungo
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + attack);
+    gainNode.gain.linearRampToValueAtTime(sustain, now + attack + decay);
+    gainNode.gain.setTargetAtTime(0, now + attack + decay + sustain, release);
   }
 
 
@@ -547,7 +817,13 @@ document.addEventListener("DOMContentLoaded", () => {
       oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
       // Applica un breve envelope ADSR per ogni nota
-      applyADSR(gainNode, 0.05, 0.1, 0.2, 0.3);
+      applyADSR(
+        gainNode,
+        soundParams.attack,
+        soundParams.decay,
+        soundParams.sustain,
+        soundParams.release
+      );
 
       noteIndex++;
     }, interval);
@@ -559,7 +835,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Applica un rilascio morbido al suono
       if (gainNode) {
-        applyADSR(gainNode, 0, 0, 0.2, 1.0); // Solo rilascio lungo
+          applyADSR(
+        gainNode,
+        soundParams.attack,
+        soundParams.decay,
+        soundParams.sustain,
+        soundParams.release
+      ); // Solo rilascio lungo
       }
     }, duration);
   }
@@ -567,11 +849,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function playNoteWithTimeout(frequency) {
     if (!audioContext || !gainNode || !oscillator) return;
 
+    oscillator.type = soundParams.wave;
     // Cambia la frequenza dell'oscillatore
     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
     // Applica un envelope ADSR
-    applyADSR(gainNode, 0.1, 0.2, 0.3, 0.5); // Envelope breve
+    applyADSR(
+      gainNode,
+      soundParams.attack,
+      soundParams.decay,
+      soundParams.sustain,
+      soundParams.release
+    );// Envelope breve
 
     // Imposta un timeout per fermare il suono dopo 3 secondi
     setTimeout(() => {
@@ -604,7 +893,7 @@ document.addEventListener("DOMContentLoaded", () => {
       convolver.connect(audioContext.destination);
 
       oscillator = audioContext.createOscillator();
-      oscillator.type = 'square';
+      oscillator.type = soundParams.wave;
       oscillator.frequency.setValueAtTime(110, audioContext.currentTime); // Nota base (A3)
       oscillator.connect(gainNode);
       oscillator.start();
@@ -620,13 +909,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audioContext) {
       // Inizializza AudioContext e nodi audio se non già inizializzati
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      gainNode = audioContext.createGain();
+      gainNode = gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + attack);
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
 
       oscillator = audioContext.createOscillator();
-      oscillator.type = 'sine'; // Puoi cambiare il tipo di onda (sine, square, sawtooth, triangle)
+      oscillator.type = soundParams.wave; // Puoi cambiare il tipo di onda (sine, square, sawtooth, triangle)
       oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + attack);
       oscillator.start();
     }
 
@@ -663,165 +952,197 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // Applica un rilascio morbido al suono
     if (gainNode) {
-      applyADSR(gainNode, 0, 0, 0.2, 1.0); // Solo rilascio lungo
+      applyADSR(
+        gainNode,
+        soundParams.attack,
+        soundParams.decay,
+        soundParams.sustain,
+        soundParams.release
+); // Solo rilascio lungo
     }
   });
   // SUONO SUONO SUONO SUONO SUONO SUONO SUONO SUONO// SUONO SUONO SUONO SUONO SUONO SUONO SUONO SUONO// SUONO SUONO SUONO SUONO SUONO SUONO SUONO SUONO
-
+  
 
 
   /// ——————————
   // CONFIG ZONE
   // ——————————
   const zoneConfigs = [
-    {
-      type: 'type1',
-      color: 0x4682EB,
-      size: 0.2,    // Base size for zone radius
-      count: 5,     // Number of zones of this type
-      destination: '#'
-    },
-    { id: 'zn_2', type: 'type2', size: 0.2, color: 0x00ff00, count: 5, opacity: 0.4 },
-    { id: 'zn_3', type: 'type3', size: 0.2, color: 0x0000ff, count: 5, opacity: 0.4 },
-    { id: 'zn_4', type: 'type4', size: 0.2, color: 0xffff00, count: 5, opacity: 0.4 },
-    { id: 'zn_5', type: 'type5', size: 0.2, color: 0xff00ff, count: 5, opacity: 0.4 }
+    { id: 'zn_1', type: 'type1', size: 0.09, color: 0xff0000, count: 5 },
+    { id: 'zn_2', type: 'type2', size: 0.09, color: 0x00ff00, count: 5 },
+    { id: 'zn_3', type: 'type3', size: 0.09, color: 0x0000ff, count: 5 },
+    { id: 'zn_4', type: 'type4', size: 0.09, color: 0xffff00, count: 5 },
+    { id: 'zn_5', type: 'type5', size: 0.09, color: 0xff00ff, count: 5 }
   ];
 
   const clickZones = [];   // Mesh invisibili per il raycast
   const pointCloudZones = [];  // Points visibili
-  const pointCloudsByType = {}; // { type1: THREE.Points, ... }
 
-  function getUniqueCenters(modelPositions, totalZones) {
-    const shuffled = [...modelPositions];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled.slice(0, totalZones);
-  }
+  function getCentersFromAllMeshes(meshes) {
+  // Prende un punto random su ogni mesh
+  return meshes.map(mesh => {
+    const sampler = new MeshSurfaceSampler(mesh).build();
+    const tempVec = new THREE.Vector3();
+    sampler.sample(tempVec);
+    mesh.localToWorld(tempVec);
+    return tempVec.clone();
+  });
 
-  function createZone(cfg, center, index) {
-    const positions = [];
-    const colors = [];
-    const zoneRadius = cfg.size || 0.5; // Default radius if not specified
-    
-    for (let p = 0; p < 100; p++) {
-      const phi = Math.random() * Math.PI * 2;
-      const costheta = Math.random() * 2 - 1;
-      const u = Math.random();
-      const theta = Math.acos(costheta);
-      const radius = Math.cbrt(u) * zoneRadius;
-      
-      const x = center.x + radius * Math.sin(theta) * Math.cos(phi);
-      const y = center.y + radius * Math.sin(theta) * Math.sin(phi);
-      const z = center.z + radius * Math.cos(theta);
-
-      positions.push(x, y, z);
-      const color = new THREE.Color(cfg.color);
-      colors.push(color.r, color.g, color.b);
-    }
-
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    
-    const mat = new THREE.PointsMaterial({
-      size: 0.1,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      sizeAttenuation: true,
-      blending: THREE.AdditiveBlending
-    });
-
-    const points = new THREE.Points(geo, mat);
-    points.userData = {
-      type: cfg.type,
-      zoneType: 'zona',
-      id: `zone_${cfg.type}_${index}`,
-      destination: cfg.destination || '#',
-      center: center,
-      radius: zoneRadius
-    };
-    
-    return points;
-  }
-
-  function createPointCloudZones(pointClouds, zoneConfigs) {
-    // Pulisce la scena se già presenti
-    clickZones.forEach(mesh => scene.remove(mesh));
-    pointCloudZones.forEach(p => scene.remove(p));
-    clickZones.length = 0;
-    pointCloudZones.length = 0;
-
-    // Dopo aver creato la point cloud del modello:
-    const modelPositions = [];
-    pointClouds.forEach(pc => {
-      const posAttr = pc.geometry.attributes.position;
-      for (let i = 0; i < posAttr.count; i++) {
-        modelPositions.push({
-          x: posAttr.getX(i),
-          y: posAttr.getY(i),
-          z: posAttr.getZ(i)
-        });
-      }
-    });
-
-    const totalZones = zoneConfigs.reduce((sum, cfg) => sum + cfg.count, 0);
-    const uniqueCenters = getUniqueCenters(modelPositions, totalZones);
-
-    let centerIdx = 0;
-    zoneConfigs.forEach(cfg => {
-      for (let i = 0; i < cfg.count; i++) {
-        const center = uniqueCenters[centerIdx++];
-        const points = createZone(cfg, center, i);
-        scene.add(points);
-        pointCloudZones.push(points);
-        clickZones.push(points); // Add to clickZones for raycasting
-        
-        if (!pointCloudsByType[cfg.type]) pointCloudsByType[cfg.type] = [];
-        pointCloudsByType[cfg.type].push(points);
-      }
-    });
-
-    const sitemapLinks = [
-      'https://wddc-cintaincoccodrillo.webflow.io/tour2',
-      'https://wddc-cintaincoccodrillo.webflow.io/studio', 
-      'https://wddc-cintaincoccodrillo.webflow.io/casa',
-      'https://wddc-cintaincoccodrillo.webflow.io/festival',
-      'https://wddc-cintaincoccodrillo.webflow.io/radio'
+  // 5 punti notevoli: 4 vertici e il centro
+    return [
+      new THREE.Vector3(min.x, min.y, min.z),
+      new THREE.Vector3(max.x, min.y, min.z),
+      new THREE.Vector3(min.x, max.y, min.z),
+      new THREE.Vector3(min.x, min.y, max.z),
+      center.clone()
     ];
-
-    // Dopo aver creato tutte le zone:
-    clickZones.forEach((zone, idx) => {
-      zone.userData.destination = sitemapLinks[idx] || '/404';
-    });
   }
 
-  function setupClickHandler(camera, controls, renderer, rootElement) {
-    renderer.domElement.addEventListener('click', (event) => {
+  function createPointCloudZones(mesh, zoneConfigs) {
+  // Pulisci la scena se già presenti
+  clickZones.forEach(mesh => scene.remove(mesh));
+  pointCloudZones.forEach(p => scene.remove(p));
+  clickZones.length = 0;
+  pointCloudZones.length = 0;
+
+  const macroCenters = getCentersFromAllMeshes(meshes);
+
+  let destinationCounter = 1;
+
+  // Definisci i centri delle 5 macro-nuvole (puoi regolare le posizioni)
+
+  zoneConfigs.forEach((cfg, macroIdx) => {
+  const macroCenter = macroCenters[macroIdx];
+    for (let i = 0; i < cfg.count; i++) {
+      // Genera un centro zona attorno al centro della macro-nuvola
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 0.4 + Math.random() * 0.3; // distanza dal centro macro
+      const center = macroCenter.clone().add(
+        new THREE.Vector3(
+          Math.cos(angle) * radius,
+          Math.sin(angle) * radius,
+          (Math.random() - 0.5) * 0.3
+        )
+      );
+
+      // Genera i punti della zona attorno al centro
+      const positions = [];
+      const colors = [];
+      for (let p = 0; p < 100; p++) {
+        let point;
+        do {
+          point = new THREE.Vector3(
+            (Math.random() * 2 - 1),
+            (Math.random() * 2 - 1),
+            (Math.random() * 2 - 1)
+          );
+        } while (point.length() > 1);
+
+        point.multiplyScalar(cfg.size).add(center);
+        positions.push(point.x, point.y, point.z);
+
+        const color = new THREE.Color(cfg.color);
+        colors.push(color.r, color.g, color.b);
+      }
+
+      // Mesh invisibile per il raycast
+      const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(cfg.size, 2, 2),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      sphere.position.copy(center);
+      sphere.userData = {
+        id: `${cfg.id}_${i + 1}`,
+        type: cfg.type,
+        color: cfg.color,
+        center: center.clone(),
+        radius: cfg.size,
+        destination: `https://jonathans-stunning-site-778d47.webflow.io/zona-${destinationCounter}`,
+        zoneType: 'zona'
+      };
+      destinationCounter++;
+      scene.add(sphere);
+      clickZones.push(sphere);
+
+      // Point cloud visibile
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 0.05,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: false,
+        sizeAttenuation: true,
+        blending: THREE.AdditiveBlending
+      });
+
+      const pointCloud = new THREE.Points(geo, mat);
+      scene.add(pointCloud);
+      pointCloudZones.push(pointCloud);
+    }
+  });
+}
+
+
+  let originalCamPos = camera.position.clone();
+  let originalTarget = controls.target.clone();
+  let zoomedZone = null;
+
+  function setupClickHandler(camera, controls, renderer) {
+    const raycaster = new THREE.Raycaster(); // Correctly reference THREE.Raycaster
+    const mouse = new THREE.Vector2();
+
+    renderer.domElement.addEventListener('click', event => {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
-      const raycastObjects = clickZones.filter(obj => obj.raycastable);
-      const intersects = raycaster.intersectObjects(raycastObjects);
+      const intersects = raycaster.intersectObjects(clickZones);
 
       if (intersects.length > 0) {
         const target = intersects[0].object;
-        if (target.userData.zoneType === 'zona') {
-          const { id, destination } = target.userData;
-          console.log(`Zona cliccata: ${id}, link sitemap associato: ${destination}`); // <-- AGGIUNTO
-          const customEvent = new CustomEvent('zoneClicked', {
-            detail: { zoneId: id, destination }
-          });
-          rootElement.dispatchEvent(customEvent);
+        //focusZoneById(target.userData.id);
 
-          Turbo.visit(destination);
+        if (target.userData.zoneType === 'zona') {
+        const { id, destination } = target.userData;
+
+         if (!zoomedZone) {
+          originalCamPos.copy(camera.position);
+          originalTarget.copy(controls.target);
         }
+        zoomedZone = id;
+
+        //fai partire l'evento
+        const customEvent = new CustomEvent('zoneClicked', {
+          detail: { zoneId: id, destination }
+        });
+      rootElement.dispatchEvent(customEvent);
       }
-    });
+    } else if (zoomedZone) {
+      // SECONDO CLICK FUORI: torna alla vista originale
+      zoomedZone = null;
+      controls.enabled = false;
+      gsap.to(camera.position, {
+        x: originalCamPos.x,
+        y: originalCamPos.y,
+        z: originalCamPos.z,
+        duration: 1.5,
+        ease: 'power2.inOut'
+      });
+      gsap.to(controls.target, {
+        x: originalTarget.x,
+        y: originalTarget.y,
+        z: originalTarget.z,
+        duration: 1.5,
+        ease: 'power2.inOut',
+        onComplete: () => (controls.enabled = true)
+      });
+    }
+  });
   }
 
       // 🔵 Movimento morbido verso la zona
@@ -830,13 +1151,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!zone) return;
 
       const { center, radius } = zone.userData;
-      const centerVec = center.clone ? center.clone() : new THREE.Vector3(center.x, center.y, center.z);
 
       const dir = new THREE.Vector3()
         .subVectors(camera.position, controls.target)
         .normalize();
 
-      const newCamPos = centerVec.clone().add(dir.multiplyScalar(radius * 6));
+      const newCamPos = center.clone().add(dir.multiplyScalar(radius * 6));
 
       gsap.to(camera.position, {
         duration: 1.2,
@@ -849,91 +1169,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
       gsap.to(controls.target, {
         duration: 1.2,
-        x: centerVec.x,
-        y: centerVec.y,
-        z: centerVec.z,
+        x: center.x,
+        y: center.y,
+        z: center.z,
         ease: 'power2.inOut',
         onUpdate: () => controls.update()
       });
     }
+  /*window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'activateZone') {
+        const zoneId = event.data.zoneId;
 
-
-  /*let clickLockedType = null;*/
-
-// Funzioni per visibilità point cloud
-function showOnlyType(type) {
-  Object.entries(pointCloudsByType).forEach(([t, pointsArr]) => {
-    pointsArr.forEach(points => {
-      if (points && points.material) {
-        gsap.to(points.material, {
-          opacity: t === type ? 0.3 : 0,
-          duration: 0.5,
-          overwrite: true
-        });
-        points.raycastable = (t === type);
-        points.visible = true;
+        const zone = clickZones.find((z) => z.userData.id === zoneId);
+        if (zone) {
+          const activateEvent = new CustomEvent('activateZone', {
+            detail: { zoneId: zone.userData.id }
+          });
+          zone.dispatchEvent(activateEvent);
+          console.log ("Zona attivata: ${zone.userData.id}");
+        } else {
+          console.warn('Zona non trovata:', zoneId);
+        }
       }
     });
-  });
-}
 
-function showAllTypes() {
-  Object.values(pointCloudsByType).forEach(pointsArr => {
-    pointsArr.forEach(points => {
-      if (points && points.material) {
-        gsap.to(points.material, {
-          opacity: 0.3,
-          duration: 0.5,
-          overwrite: true
-        });
-        points.raycastable = true;
-        points.visible = true;
-      }
+  // Aggiungi un listener per il CustomEvent su ogni zona cliccabile
+  clickZones.forEach((zone) => {
+    zone.addEventListener('activateZone', (event) => {
+      const { zoneId } = event.detail;
+      console.log(`CustomEvent ricevuto per zona: ${zoneId}`);
+      // Logica per gestire l'attivazione della zona
+      // (esempio: cambiare colore, eseguire un'animazione, ecc.)
     });
-  });
-}
+  }); */
 
-document.addEventListener('mouseenter', function(e) {
-  if (e.target.classList.contains('zone-btn')) {
-    const type = e.target.dataset.type;
-    rootElement.dispatchEvent(new CustomEvent('hoverZoneType', { detail: { type } }));
-  }
-}, true);
-
-document.addEventListener('mouseleave', function(e) {
-  if (e.target.classList.contains('zone-btn')) {
-    rootElement.dispatchEvent(new CustomEvent('hoverOutZoneType'));
-  }
-}, true);
-
-// All zones accese di default all'avvio
-showAllTypes();
-
-
-
-// Gestione bottoni
-document.querySelectorAll('.zone-btn').forEach(btn => {
-  const type = btn.dataset.type;
-
-  btn.addEventListener('mouseenter', () => {
-    showOnlyType(type);
-  });
-
-  btn.addEventListener('mouseleave', () => {
-    showAllTypes();
-  });
-});
-
-// All zones accese di default all'avvio
-showAllTypes();
-
-
-setTimeout(() => {
-  createPointCloudZones(pointClouds, zoneConfigs);
-  showAllTypes(); // <-- chiama qui, DOPO la creazione delle zone!
-  setupClickHandler(camera, controls, renderer, rootElement);
-  animate();
-}, 2000);
+  setTimeout(() => {
+    if (modules.length > 0) {
+    createPointCloudZones(modules.slice(0, zoneConfigs.length), zoneConfigs);
+    }
+    setupClickHandler(camera, controls, renderer, rootElement);
+    animate();
+  }, 2000);
 
 
 
@@ -949,10 +1225,203 @@ setTimeout(() => {
 
   rootElement.addEventListener('zoneClicked', (e) => {
   console.log('Evento ricevuto! Zona:', e.detail.zoneId, 'Destination:', e.detail.destination);
-  focusZoneById(e.detail.zoneId);
-
-  Turbo.visit(e.detail.destination, { frame: 'menu' });  // Carica la pagina nel turbo-frame
+  if (e.detail.zoneId) {
+    // Zoom su zona
+    focusZoneById(e.detail.zoneId);
+    Turbo.visit(e.detail.destination, { frame: 'menu' });  // Carica la pagina nel turbo-frame
+  } else {
+    // Torna alla vista iniziale
+    controls.enabled = false;
+    gsap.to(camera.position, {
+      x: originalCamPos.x,
+      y: originalCamPos.y,
+      z: originalCamPos.z,
+      duration: 1.5,
+      ease: 'power2.inOut'
+    });
+    gsap.to(controls.target, {
+      x: originalTarget.x,
+      y: originalTarget.y,
+      z: originalTarget.z,
+      duration: 1.5,
+      ease: 'power2.inOut',
+      onComplete: () => (controls.enabled = true)
+    });
+    // (opzionale) azzera zoomedZone se usi questa variabile
+    zoomedZone = null;
+  }
 });
   
 
+  /*/ ——————————
+  // CREA ZONE POINT CLOUD
+  // ——————————
+  function createPointCloudZones(pointClouds, zoneConfigs) {
+    clickZones.length = 0;
+    pointCloudZones.length = 0;
+
+    zoneConfigs.forEach(cfg => {
+      for (let i = 0; i < cfg.count; i++) {
+        // Scegli un punto casuale come centro
+        const pc = pointClouds[i % pointClouds.length];
+        const posArr = pc.geometry.attributes.position.array;
+        const idx = Math.floor(Math.random() * (posArr.length / 3)) * 3;
+        const center = new THREE.Vector3(posArr[idx], posArr[idx + 1], posArr[idx + 2]);
+        const radius = cfg.size;
+
+        // Genera punti sferici per la zone point cloud
+        const positions = [];
+        const colors = [];
+        const numPoints = 500;  // quanti punti per zona
+
+        for (let p = 0; p < numPoints; p++) {
+          // Punto casuale dentro sfera
+          let point;
+          do {
+            point = new THREE.Vector3(
+              (Math.random() * 2 - 1),
+              (Math.random() * 2 - 1),
+              (Math.random() * 2 - 1)
+            );
+          } while (point.length() > 1);
+
+          point.multiplyScalar(radius);
+          point.add(center);
+
+          positions.push(point.x, point.y, point.z);
+
+          const color = new THREE.Color(cfg.color);
+          colors.push(color.r, color.g, color.b);
+        }
+
+        // BufferGeometry point cloud visibile
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+        const mat = new THREE.PointsMaterial({
+          size: radius * 0.05,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.8,
+          depthWrite: false
+        });
+
+        const points = new THREE.Points(geo, mat);
+        scene.add(points);
+        pointCloudZones.push(points);
+
+        // Mesh invisibile per raycast (sphere)
+        const sphereGeo = new THREE.SphereGeometry(radius, 6, 16);
+        const sphereMat = new THREE.MeshBasicMaterial({ visible: false });
+        const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+        sphereMesh.position.copy(center);
+        sphereMesh.userData = {
+          id: `${cfg.id}_${i + 1}`,
+          type: cfg.type,
+          color: cfg.color,
+          center: center.clone(),
+          radius: radius
+        };
+        scene.add(sphereMesh);
+        clickZones.push(sphereMesh);
+      }
+    });
+  }
+
+  // ——————————
+  // PARTICLE EMITTER AL CLICK
+  // ——————————
+  const activeParticles = [];
+  function emitParticles(center, color) {
+    const count = 30;
+    for (let i = 0; i < count; i++) {
+      const geom = new THREE.SphereGeometry(0.005, 8, 8);
+      const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 1 });
+      const p = new THREE.Mesh(geom, mat);
+      p.position.copy(center);
+      p.userData.velocity = new THREE.Vector3(
+        (Math.random() * 2 - 1) * 0.02,
+        (Math.random() * 2 - 1) * 0.02,
+        (Math.random() * 2 - 1) * 0.02
+      );
+      scene.add(p);
+      activeParticles.push(p);
+    }
+  }
+
+  // ——————————
+  // CLICK E INQUADRATURA CAMERA
+  // ——————————
+  function setupClickHandler(camera, controls, renderer) {
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let originalCamPos = camera.position.clone();
+    let originalTarget = controls.target.clone();
+    let zoomedZone = null;
+
+    renderer.domElement.addEventListener('click', e => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(clickZones, false);
+
+      if (intersects.length) {
+        const zone = intersects[0].object;
+        const { center, radius, color, id } = zone.userData;
+
+        console.log('Zona cliccata:', id);
+
+        emitParticles(center, color);
+
+        if (!zoomedZone) {
+          originalCamPos.copy(camera.position);
+          originalTarget.copy(controls.target);
+        }
+        zoomedZone = id;
+
+        const fov = camera.fov * (Math.PI / 180);
+        const dist = radius / Math.sin(fov / 2) * 1.2;
+        const dir = new THREE.Vector3().subVectors(camera.position, center).normalize();
+        const newCamPos = center.clone().add(dir.multiplyScalar(dist));
+
+        controls.enabled = false;
+        gsap.to(camera.position, {
+          x: newCamPos.x,
+          y: newCamPos.y,
+          z: newCamPos.z,
+          duration: 1.5,
+          ease: 'power2.inOut'
+        });
+        gsap.to(controls.target, {
+          x: center.x,
+          y: center.y,
+          z: center.z,
+          duration: 1.5,
+          ease: 'power2.inOut',
+          onComplete: () => (controls.enabled = true)
+        });
+      } else if (zoomedZone) {
+        zoomedZone = null;
+        controls.enabled = false;
+        gsap.to(camera.position, {
+          x: originalCamPos.x,
+          y: originalCamPos.y,
+          z: originalCamPos.z,
+          duration: 1.5,
+          ease: 'power2.inOut'
+        });
+        gsap.to(controls.target, {
+          x: originalTarget.x,
+          y: originalTarget.y,
+          z: originalTarget.z,
+          duration: 1.5,
+          ease: 'power2.inOut',
+          onComplete: () => (controls.enabled = true)
+        });
+      }
+    });
+  }*/
 });
